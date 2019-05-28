@@ -1,0 +1,103 @@
+#wrapper function to start esp32 development environment
+           esp32(){
+              # Transform long options to short ones
+                for arg in "$@"; do
+                  shift
+                  case "$arg" in
+                    "--help")   set -- "$@" "-h" ;;
+                    "--remove") set -- "$@" "-r" ;;
+                    "--delete") set -- "$@" "-r" ;;
+                    "--new")    set -- "$@" "-n" ;;
+                    "--install") set -- "$@" "-i";;
+                          *)        set -- "$@" "$arg"
+                  esac
+                done
+
+              #assigning default value for template 
+              OPTIND=1
+              while getopts ":n:r:i" arg; do
+                  case $arg in
+                  n) # specify new project dir.
+                           dir_name=${OPTARG}
+                           if [ -d ~/esp/$dir_name ]; then
+                                echo -e  "\033[1;31mError Directory Exists\033[0m" >&2
+                           else 
+                                   echo "creating new project : $dir_name in ~/esp"
+                                   mkdir ~/esp/$dir_name
+                                   cd ~/esp/$dir_name
+                                   cp -r $IDF_PATH/examples/get-started/hello_world .
+                                   git init
+                           fi;
+                                   
+
+                      ;;
+                    r) # Specify project to be removed.
+                           dir_name=${OPTARG}
+                           if [ -d ~/esp/$dir_name ]; then
+                                echo "Deleteing project : $dir_name in ~/esp"
+                                read -p 'dou you want to continue : y/n ' userinput
+                                if [[ $userinput =~ [yY] ]]; then
+                                   cd ~/esp
+                                   rm -rf ~/esp/$dir_name
+                                fi
+                           else 
+                                echo -e  "\033[1;31mError :Directory does not exist\033[0m" >&2
+                           fi;
+                      ;;
+                    i) # installing tool chain and set up
+                           echo -e  "\033[1;33mInstalling pre-requisites\033[0m" >&2
+                           sudo apt-get install gcc git wget make libncurses-dev \
+                           flex bison gperf python python-pip python-setuptools \
+                           python-serial python-cryptography python-future  \
+                           python-pyparsing python-pyelftools axel -y
+                           echo -e  "\033[1;33mDownloading tool chain\033[0m" >&2
+                           if [ -d ~/esp ]; then
+                                echo -e "\033[1;31mdirectory esp exits in $HOME\033[0m "
+                                read -p 'dou you want to delete folder and continue: y/n ' userinput
+                                if [[ $userinput =~ [yY] ]]; then
+                                   rm -rf ~/esp
+                                else
+                                        exit 1
+                                fi
+                           fi     
+                           mkdir ~/esp
+                           cd ~/esp
+                           axel -n 64 https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz
+                           uz xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz
+                           rm -rf xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz
+                           echo -e  "\033[1;33mAdding $USER to dialout group\033[0m" >&2
+                           sudo usermod -a -G dialout $USER
+                           echo -e  "\033[1;33mCloning ESP-IDF\033[0m" >&2
+                           git clone --recursive https://github.com/espressif/esp-idf.git
+                           cd esp-idf
+                           git submodule update --init
+                           echo -e  "\033[1;33mInstalling required python libs\033[0m" >&2
+                           python -m pip install --user -r ~/esp/esp-idf/requirements.txt
+                           ;;
+                    h | *) # Display help.
+                           echo -e  "\033[1;31mUsage : esp32 -n <ProjectName> \033[0m for New Project" >&2
+                           echo -e  "\033[1;31mUsage : esp32 -r <ProjectName> \033[0m for Deleting Project" >&2
+                      ;;
+                  esac
+                done
+                shift $(($OPTIND-1))
+                echo  -e "******* \033[5mstarting esp32 devel!!\033[0m *****"  
+                if [ -d ~/esp/xtensa-esp32-elf/bin ]; then
+                        echo -e  "\033[1;33mAdding tool chain to system path\033[0m" >&2
+                        export PATH=$PATH:/home/aswin/esp/xtensa-esp32-elf/bin
+                else 
+                     echo -e  "\033[1;31mError :Tool chain not found at $HOME/esp, try running \033[0m" >&2
+                     echo -e  "\033[1;33esp32 --install\033[0m" >&2
+                     read -n 1
+                     exit 1
+                fi;
+                if [ -d ~/esp/esp-idf ]; then
+                        echo -e  "\033[1;33mAdding IDF Path to system\033[0m" >&2
+                        export IDF_PATH=~/esp/esp-idf
+                        echo -e  "\033[1;33m*****platform ready*******\033[0m" >&2
+                else 
+                     echo -e  "\033[1;31mError :ESP-IDF not found at $HOME/esp \033[0m" >&2
+                     echo -e  "\033[1;33esp32 --install\033[0m" >&2
+                fi;
+      }
+
