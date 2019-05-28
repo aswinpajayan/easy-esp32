@@ -33,3 +33,4 @@ adding a new project with hello-world template
     make flash monitor
     
  ```
+The script just follows the instructions given in https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html#installation-step-by-step
