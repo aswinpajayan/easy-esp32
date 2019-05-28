@@ -32,4 +32,4 @@ adding a new project with hello-world template
     make menuconfig
     make flash monitor
     
-    ```
+ ```
