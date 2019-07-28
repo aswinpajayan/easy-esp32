@@ -26,7 +26,6 @@
                                    mkdir ~/esp/$dir_name
                                    cd ~/esp/$dir_name
                                    cp -r $IDF_PATH/examples/get-started/hello_world ./.
-                                   git init
                            fi;
                                    
 
