@@ -34,3 +34,7 @@ adding a new project with hello-world template
     
  ```
 The script just follows the instructions given in https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html#installation-step-by-step
+
+# Eclipse IDE for ESP development 
+
+After installing and testing ESP from commandline, you can use Eclipse IDE for your further development. Detailed instructions for setting up Eclipse IDE is given in [espressif/idf-eclipse-plugin](https://github.com/espressif/idf-eclipse-plugin/blob/master/README.md)
