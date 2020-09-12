@@ -85,7 +85,7 @@
                 echo  -e "******* \033[5mstarting esp32 devel!!\033[0m *****"  
                 if [ -d ~/esp/xtensa-esp32-elf/bin ]; then
                         echo -e  "\033[1;33mAdding tool chain to system path\033[0m" >&2
-                        export PATH=$PATH:/home/aswin/esp/xtensa-esp32-elf/bin
+                        export PATH=$PATH:$HOME/esp/xtensa-esp32-elf/bin
                 else 
                      echo -e  "\033[1;31mError :Tool chain not found at $HOME/esp, try running \033[0m" >&2
                      echo -e  "\033[1;33esp32 --install\033[0m" >&2
